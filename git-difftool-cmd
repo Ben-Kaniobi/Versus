@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Get diff tool
+TOOL="$(git config --get --global diff.tool)"
+
+# Get diff tool cmd
+CMD="$(git config --get --global difftool.$TOOL.cmd)"
+
+# Run and exit if found
+if [ "$CMD" != "" ]; then
+    REMOTE="$1"
+    LOCAL="$2"
+    $CMD
+    exit
+fi
+
+# Get diff tool path
+CMD="$(git config --get --global difftool.$TOOL.path)"
+
+# Run and exit if found
+if [ "$CMD" != "" ]; then
+    $CMD $@
+    exit
+fi
+
+# Get command from tool keyword
+if [ "$TOOL" == "bc" ] || [ "$TOOL" == "bc3" ]; then
+    CMD="bcompare"
+elif [ "$TOOL" == "vimdiff" ] || [ "$TOOL" == "vimdiff2" ] || [ "$TOOL" == "vimdiff3" ]; then
+    CMD="vimdiff"
+elif [ "$TOOL" == "araxis" ]; then
+    CMD="compare"
+elif [ "$TOOL" == "codecompare" ]; then
+    CMD="CodeCompare"
+elif [ "$TOOL" == "deltawalker" ]; then
+    CMD="DeltaWalker"
+elif [ "$TOOL" == "emerge" ]; then
+    CMD="emacs"
+elif [ "$TOOL" == "gvimdiff" ] || [ "$TOOL" == "gvimdiff2" ] || [ "$TOOL" == "gvimdiff3" ]; then
+    CMD="gvim"
+elif [ "$TOOL" == "winmerge" ]; then
+    CMD="WinMergeU"
+else
+    # Other commands match the keyword (e.g. "kdiff3")
+    CMD="$TOOL"
+fi
+
+# Run
+$CMD $@
