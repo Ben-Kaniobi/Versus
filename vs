@@ -29,8 +29,15 @@ if [ "$ISEXT" == false ]; then
     NUMCHANGES=$(git diff --diff-filter=M --name-only "$@" | wc -l)
 fi
 
-if [ "$ISEXT" = true ]; then
+# Check if there are merge confligts
+CONFLICTS=false
+git diff --diff-filter=U --quiet $@ || CONFLICTS=true
+
+if [ "$ISEXT" == true ]; then
     "$MYDIR/git-difftool-cmd" $@
+elif [ "$CONFLICTS" == true ]; then
+    echo "Merge conflicts detected, running git mergetool..."
+    git mergetool $@
 elif [ "$NUMCHANGES" != 1 ]; then
     git difftool --dir-diff $AUTOCACHED $@
 else
