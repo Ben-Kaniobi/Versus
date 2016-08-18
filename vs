@@ -7,7 +7,11 @@ MYDIR="$(dirname "$0")"
 
 # Check if there are only staged differences, if so then set AUTOCACHED variable
 AUTOCACHED=""
-git diff --quiet && AUTOCACHED="--cached" && echo "No unstaged modifications, automatically running difftool with '$AUTOCACHED' option..."
+git diff --quiet && AUTOCACHED="--cached"
+git diff --cached --quiet && AUTOCACHED=""
+if [ "$AUTOCACHED" != "" ]; then
+    echo "No unstaged modifications, automatically running difftool with '$AUTOCACHED' option..."
+fi
 
 # Check if there are external files in the argument list
 ISEXT=false
