@@ -7,8 +7,8 @@ MYDIR="$(dirname "$0")"
 
 # Check if there are only staged differences, if so then set AUTOCACHED variable
 AUTOCACHED=""
-git diff --quiet && AUTOCACHED="--cached"
-git diff --cached --quiet && AUTOCACHED=""
+git diff          --quiet "$@" && AUTOCACHED="--cached"
+git diff --cached --quiet "$@" && AUTOCACHED=""
 if [ "$AUTOCACHED" != "" ]; then
     echo "No unstaged modifications, automatically running difftool with '$AUTOCACHED' option..."
 fi
@@ -26,7 +26,7 @@ done
 # Count number of files witch changes
 NUMCHANGES=0
 if [ "$ISEXT" == false ]; then
-    NUMCHANGES=$(git diff --diff-filter=M --name-only "$@" | wc -l)
+    NUMCHANGES=$(git diff --diff-filter=M $AUTOCACHED --name-only "$@" | wc -l)
 fi
 
 # Check if there are merge confligts
