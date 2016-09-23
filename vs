@@ -5,14 +5,6 @@ set -o errexit
 
 MYDIR="$(dirname "$0")"
 
-# Check if there are only staged differences, if so then set AUTOCACHED variable
-AUTOCACHED=""
-git diff          --quiet "$@" && AUTOCACHED="--cached"
-git diff --cached --quiet "$@" && AUTOCACHED=""
-if [ "$AUTOCACHED" != "" ]; then
-    echo "No unstaged modifications, automatically running difftool with '$AUTOCACHED' option..."
-fi
-
 # Check if there are external files in the argument list
 ISEXT=false
 for arg in "$@"; do
@@ -22,6 +14,16 @@ for arg in "$@"; do
         fi
     fi
 done
+
+# Check if there are only staged differences, if so then set AUTOCACHED variable
+AUTOCACHED=""
+if [ "$ISEXT" == false ]; then
+    git diff          --quiet "$@" && AUTOCACHED="--cached"
+    git diff --cached --quiet "$@" && AUTOCACHED=""
+    if [ "$AUTOCACHED" != "" ]; then
+        echo "No unstaged modifications, automatically running difftool with '$AUTOCACHED' option..."
+    fi
+fi
 
 # Count number of files witch changes
 NUMCHANGES=0
