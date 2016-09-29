@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Exit on error
+set -o errexit
+
 # Get diff tool
 TOOL="$(git config --get --global diff.tool)"
 
