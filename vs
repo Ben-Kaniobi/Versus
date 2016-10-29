@@ -15,20 +15,20 @@ for arg in "$@"; do
     fi
 done
 
-# Check if there are only staged differences, if so then set AUTOCACHED variable
-AUTOCACHED=""
+# Check if there are only staged differences, if so then set AUTOSTAGED variable
+AUTOSTAGED=""
 if [ "$ISEXT" == false ]; then
-    git diff          --quiet "$@" && AUTOCACHED="--cached"
-    git diff --cached --quiet "$@" && AUTOCACHED=""
-    if [ "$AUTOCACHED" != "" ]; then
-        echo "No unstaged modifications, automatically running difftool with '$AUTOCACHED' option..."
+    git diff          --quiet "$@" && AUTOSTAGED="--staged"
+    git diff --cached --quiet "$@" && AUTOSTAGED=""
+    if [ "$AUTOSTAGED" != "" ]; then
+        echo "No unstaged modifications, automatically running difftool with '$AUTOSTAGED' option..."
     fi
 fi
 
 # Count number of files witch changes
 NUMCHANGES=0
 if [ "$ISEXT" == false ]; then
-    NUMCHANGES=$(git diff --diff-filter=M $AUTOCACHED --name-only "$@" | wc -l)
+    NUMCHANGES=$(git diff --diff-filter=M $AUTOSTAGED --name-only "$@" | wc -l)
 fi
 
 # Check if there are merge confligts
@@ -41,7 +41,7 @@ elif [ "$CONFLICTS" == true ]; then
     echo "Merge conflicts detected, running git mergetool..."
     git mergetool $@
 elif [ "$NUMCHANGES" != 1 ]; then
-    git difftool --dir-diff $AUTOCACHED $@
+    git difftool --dir-diff $AUTOSTAGED $@
 else
-    git difftool $AUTOCACHED $@
+    git difftool $AUTOSTAGED $@
 fi
