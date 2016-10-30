@@ -4,49 +4,49 @@
 set -o errexit
 
 # Get diff tool
-TOOL="$(git config --get --global diff.tool)"
+tool="$(git config --get --global diff.tool)"
 
 # Get diff tool cmd
-CMD="$(git config --get --global difftool.$TOOL.cmd)"
+cmd="$(git config --get --global difftool.$tool.cmd)"
 
 # Run and exit if found
-if [ "$CMD" != "" ]; then
+if [[ "$cmd" != "" ]]; then
     REMOTE="$1"
     LOCAL="$2"
-    $CMD
+    $cmd
     exit
 fi
 
 # Get diff tool path
-CMD="$(git config --get --global difftool.$TOOL.path)"
+cmd="$(git config --get --global difftool.$tool.path)"
 
 # Run and exit if found
-if [ "$CMD" != "" ]; then
-    $CMD $@
+if [[ "$cmd" != "" ]]; then
+    $cmd $@
     exit
 fi
 
 # Get command from tool keyword
-if [ "$TOOL" == "bc" ] || [ "$TOOL" == "bc3" ]; then
-    CMD="bcompare"
-elif [ "$TOOL" == "vimdiff" ] || [ "$TOOL" == "vimdiff2" ] || [ "$TOOL" == "vimdiff3" ]; then
-    CMD="vimdiff"
-elif [ "$TOOL" == "araxis" ]; then
-    CMD="compare"
-elif [ "$TOOL" == "codecompare" ]; then
-    CMD="CodeCompare"
-elif [ "$TOOL" == "deltawalker" ]; then
-    CMD="DeltaWalker"
-elif [ "$TOOL" == "emerge" ]; then
-    CMD="emacs"
-elif [ "$TOOL" == "gvimdiff" ] || [ "$TOOL" == "gvimdiff2" ] || [ "$TOOL" == "gvimdiff3" ]; then
-    CMD="gvim"
-elif [ "$TOOL" == "winmerge" ]; then
-    CMD="WinMergeU"
+if [[ "$tool" == "bc" || "$tool" == "bc3" ]]; then
+    cmd="bcompare"
+elif [[ "$tool" == "vimdiff" || "$tool" == "vimdiff2" || "$tool" == "vimdiff3" ]]; then
+    cmd="vimdiff"
+elif [[ "$tool" == "araxis" ]]; then
+    cmd="compare"
+elif [[ "$tool" == "codecompare" ]]; then
+    cmd="CodeCompare"
+elif [[ "$tool" == "deltawalker" ]]; then
+    cmd="DeltaWalker"
+elif [[ "$tool" == "emerge" ]]; then
+    cmd="emacs"
+elif [[ "$tool" == "gvimdiff" || "$tool" == "gvimdiff2" || "$tool" == "gvimdiff3" ]]; then
+    cmd="gvim"
+elif [[ "$tool" == "winmerge" ]]; then
+    cmd="WinMergeU"
 else
     # Other commands match the keyword (e.g. "kdiff3")
-    CMD="$TOOL"
+    cmd="$tool"
 fi
 
 # Run
-$CMD $@
+$cmd $@
