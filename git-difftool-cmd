@@ -4,25 +4,26 @@
 set -o errexit
 
 # Get diff tool
-tool="$(git config --get --global diff.tool)"
+tool=$(git config --get --global diff.tool)
 
 # Get diff tool cmd
-cmd="$(git config --get --global difftool.$tool.cmd)"
+cmd=$(git config --get --global difftool."$tool".cmd || echo "")
 
 # Run and exit if found
 if [[ "$cmd" != "" ]]; then
     REMOTE="$1"
     LOCAL="$2"
+    export REMOTE LOCAL
     $cmd
     exit
 fi
 
 # Get diff tool path
-cmd="$(git config --get --global difftool.$tool.path)"
+cmd=$(git config --get --global difftool."$tool".path || echo "")
 
 # Run and exit if found
 if [[ "$cmd" != "" ]]; then
-    $cmd $@
+    $cmd "$@"
     exit
 fi
 
@@ -49,4 +50,4 @@ else
 fi
 
 # Run
-$cmd $@
+$cmd "$@"
