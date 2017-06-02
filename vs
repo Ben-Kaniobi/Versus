@@ -2,6 +2,7 @@
 
 # Exit on error
 set -o errexit
+err=0
 
 mydir="$(dirname "$0")"
 args=()
@@ -27,8 +28,10 @@ done
 # Check if there are only staged differences, if so then set autostaged variable
 autostaged=""
 if [[ "$isext" == false ]]; then
-    git diff          --quiet "${args[@]}" && autostaged="--staged"
-    git diff --cached --quiet "${args[@]}" && autostaged=""
+    git diff          --quiet "${args[@]}" && autostaged="--staged" || err=$?
+    [[ $err -gt 1 ]] && exit $err || err=0
+    git diff --cached --quiet "${args[@]}" && autostaged=""         || err=$?
+    [[ $err -gt 1 ]] && exit $err || err=0
     if [[ "$autostaged" != "" ]]; then
         echo "No unstaged modifications, automatically running difftool with '$autostaged' option..."
     fi
@@ -42,7 +45,9 @@ fi
 
 # Check if there are merge confligts
 conflicts=false
-git diff --diff-filter=U --quiet "${args[@]}" || conflicts=true
+git diff --diff-filter=U --quiet "${args[@]}" || err=$?
+[[ $err -gt 1 ]] && exit $err
+[[ $err -gt 0 ]] && conflicts=true || err=0
 
 if [[ "$isext" == true ]]; then
     "$mydir/git-difftool-cmd" "${args[@]}"
